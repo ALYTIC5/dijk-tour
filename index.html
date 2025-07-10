@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Virtual Tour – Dijk van een Wijf</title>
+
+  <!-- Circular Std import -->
+  <style>
+    @font-face {
+      font-family: 'Circular Std';
+      src: url('CircularStd-Regular.woff2') format('woff2'),
+           url('CircularStd-Regular.woff')  format('woff');
+      font-weight: 400; font-style: normal;
+    }
+    @font-face {
+      font-family: 'Circular Std';
+      src: url('CircularStd-Bold.woff2') format('woff2'),
+           url('CircularStd-Bold.woff')  format('woff');
+      font-weight: 700; font-style: normal;
+    }
+  </style>
+
+  <style>
+    /* ===== 1) Full-screen background & flex centering ===== */
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      background: url('background.jpg') center/cover no-repeat fixed;
+      font-family: 'Circular Std', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ===== 2) START TOUR BUTTONS ===== */
+    #startOptions {
+      display: flex;
+      gap: 1rem;
+      z-index: 20;
+    }
+    #startOptions button {
+      width: 12rem;
+      padding: 1em;
+      background: rgba(255,255,255,0.85);
+      color: #1D1D1B;
+      border: 2px solid #EE7440;
+      border-radius: 32px;
+      cursor: pointer;
+      font-size: 1rem; font-weight:700;
+      line-height:1.2; text-align:center;
+      box-shadow:0 8px 24px rgba(0,0,0,0.15);
+      transition: background 0.3s, transform 0.2s;
+    }
+    #startOptions button:hover {
+      background: #EE7440E6;
+      transform: scale(1.05);
+    }
+    #startOptions.hidden {
+      display: none;
+    }
+
+    /* ===== 3) UNIFIED CONTROL BAR ===== */
+    #controlBar {
+      position: fixed;
+      top: 20px; left: 20px;
+      display: flex; gap:1rem;
+      padding:0.6rem 1.2rem;
+      background: rgba(255,255,255,0.6);
+      border:2px solid #EE7440;
+      border-radius:32px;
+      transform: translateX(-20px);
+      opacity:0; visibility:hidden;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      z-index:20;
+    }
+    #controlBar.visible {
+      transform: translateX(0);
+      opacity:1; visibility:visible;
+    }
+    #controlBar button {
+      background: #EE7440E6;
+      color: #1D1D1B;
+      border: none;
+      border-radius:24px;
+      padding:0.5em 1em;
+      font-size:0.9rem; font-weight:700;
+      cursor:pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    #controlBar button:hover {
+      background: #EE7440;
+      transform: scale(1.05);
+    }
+
+    /* ===== 4) WIDGET CONTAINER (no masking) ===== */
+    #widgetContainer {
+      width: 100%;
+      max-width: 600px;
+      z-index: 10;
+    }
+
+    /* ===== 5) WORDMARK TOP-RIGHT ===== */
+    #wordmark {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 250px;   
+      opacity: 0.9;
+      z-index: 20;
+    }
+
+    /* ===== 6) RESPONSIVE ===== */
+    @media (max-width:600px) {
+      #startOptions {
+        flex-direction:column;
+      }
+      #startOptions button {
+        width:80vw;
+      }
+      #controlBar {
+        top:auto; bottom:20px;
+        left:50%; transform:translateX(-50%) translateX(-20px);
+      }
+      #controlBar button {
+        font-size:0.85rem; padding:0.4em 0.8em;
+      }
+      #widgetContainer {
+        max-width:90vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Wordmark -->
+  <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
+
+  <!-- Start Tour -->
+  <div id="startOptions">
+    <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh">
+      Start Tour<br>English 
+    </button>
+    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30">
+      Start Rondleiding<br>Dutch 
+    </button>
+  </div>
+
+  <!-- Control Bar -->
+  <div id="controlBar">
+    <button id="muteBtn">Mute Sound</button>
+    <button id="volDownBtn">Vol –</button>
+    <button id="volUpBtn">Vol +</button>
+  </div>
+
+  <!-- ElevenLabs Widget -->
+  <div id="widgetContainer"></div>
+
+  <!-- Background Audio -->
+  <audio id="bgAudio" src="ocean.mp3" loop preload="auto"></audio>
+
+  <!-- Embed Script -->
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
+  <script>
+    const startOptions    = document.getElementById("startOptions");
+    const controlBar      = document.getElementById("controlBar");
+    const muteBtn         = document.getElementById("muteBtn");
+    const volDownBtn      = document.getElementById("volDownBtn");
+    const volUpBtn        = document.getElementById("volUpBtn");
+    const bgAudio         = document.getElementById("bgAudio");
+    const widgetContainer = document.getElementById("widgetContainer");
+
+    function enhanceWidget(alpha = 0.85) {
+      const iv = setInterval(() => {
+        const iframe = document.querySelector("iframe");
+        if (!iframe) return;
+        try {
+          const doc   = iframe.contentDocument || iframe.contentWindow.document;
+          const pane  = doc.querySelector('[class*="Container"]');
+          const btn   = doc.querySelector("button");
+          if (pane) {
+            pane.style.background     = `rgba(255,255,255,${alpha})`;
+            pane.style.backdropFilter = "blur(8px)";
+          }
+          if (btn && btn.innerText.toLowerCase().includes("begin")) {
+            btn.click(); clearInterval(iv);
+          }
+        } catch {}
+      }, 200);
+    }
+
+    startOptions.querySelectorAll("button").forEach(b => {
+      b.addEventListener("click", () => {
+        bgAudio.play().catch(() => {});
+        startOptions.classList.add("hidden");
+        controlBar.classList.add("visible");
+        widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${b.dataset.agent}"></elevenlabs-convai>`;
+        enhanceWidget(0.85);
+      });
+    });
+
+    muteBtn.addEventListener("click", () => {
+      bgAudio.muted = !bgAudio.muted;
+      muteBtn.textContent = bgAudio.muted ? "Unmute Sound" : "Mute Sound";
+    });
+    volDownBtn.addEventListener("click", () =>
+      bgAudio.volume = Math.max(0, bgAudio.volume - 0.1)
+    );
+    volUpBtn.addEventListener("click", () =>
+      bgAudio.volume = Math.min(1, bgAudio.volume + 0.1)
+    );
+  </script>
+</body>
+</html>
