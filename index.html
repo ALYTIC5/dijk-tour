@@ -4,157 +4,87 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Virtual Tour – Dijk van een Wijf</title>
-
-  <!-- Import Circular Std -->
+  
   <style>
-    @font-face {
-      font-family: 'Circular Std';
-      src: url('CircularStd-Regular.woff2') format('woff2'),
-           url('CircularStd-Regular.woff')  format('woff');
-      font-weight: 400; font-style: normal;
-    }
-    @font-face {
-      font-family: 'Circular Std';
-      src: url('CircularStd-Bold.woff2') format('woff2'),
-           url('CircularStd-Bold.woff')  format('woff');
-      font-weight: 700; font-style: normal;
-    }
-  </style>
-
-  <style>
-    /* Full-screen background & center layout */
+    /* Full-screen background & centering */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
       background: url('background.jpg') center/cover no-repeat fixed;
+      display: flex; align-items: center; justify-content: center;
       font-family: 'Circular Std', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
 
-    /* Start Tour buttons lowered and more transparent */
+    /* Wordmark top-right */
+    #wordmark {
+      position: fixed; top: 20px; right: 20px;
+      width: 200px; opacity: 0.9; z-index: 20;
+    }
+
+    /* Start Tour buttons at bottom-center */
     #startOptions {
-      position: absolute;
-      bottom: 4rem; /* lowered from 6rem */
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
+      position: absolute; bottom: 4rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
       z-index: 20;
     }
     #startOptions button {
-      width: 80vw;
-      max-width: 12rem;
+      width: 80vw; max-width: 12rem;
       padding: 1em;
-      background: rgba(255,255,255,0.6); /* more transparent */
+      background: rgba(255,255,255,0.6);
       color: #1D1D1B;
       border: 2px solid #EE7440;
       border-radius: 32px;
+      font: 700 1rem/1.2 'Circular Std', sans-serif;
+      text-align: center;
       cursor: pointer;
-      font-size: 1rem; font-weight: 700;
-      line-height: 1.2; text-align: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
     #startOptions button:hover {
       background: rgba(238,116,64,0.8);
       transform: scale(1.05);
     }
-    #startOptions.hidden {
-      display: none;
-    }
+    #startOptions.hidden { display: none; }
 
-    /* Control bar moved to top-center after start, buttons bigger */
-    #controlBar {
-      position: absolute;
-      top: 15%;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 1rem;
-      padding: 1rem 1.5rem; /* increased for bigger buttons */
-      background: rgba(255,255,255,0.6);
-      border: 2px solid #EE7440;
-      border-radius: 32px;
-      opacity: 0; visibility: hidden;
-      transition: opacity 0.4s ease;
+    /* Mute button bar sized like widget */
+    #muteBar {
+      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 600px;
       z-index: 20;
     }
-    #controlBar.visible {
-      opacity: 1; visibility: visible;
-    }
-    #controlBar button {
-      background: #EE7440E6;
+    #muteBar button {
+      width: 100%;
+      padding: 1.2em;
+      background: #EE7440;
       color: #1D1D1B;
       border: none;
-      border-radius: 24px;
-      padding: 0.8em 1.2em; /* larger */
-      font-size: 1rem; /* larger */
-      font-weight: 700;
+      border-radius: 32px;
+      font: 700 1.1rem/1.2 'Circular Std', sans-serif;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
-    #controlBar button:hover {
-      background: #EE7440;
-      transform: scale(1.05);
+    #muteBar button:hover {
+      background: #e66426;
+      transform: scale(1.03);
     }
+    #muteBar.hidden { display: none; }
 
-    /* Widget container flex-centered (50% down) */
+    /* Widget container centered */
     #widgetContainer {
       width: 100%; max-width: 600px;
       z-index: 10;
     }
 
-    /* Wordmark top-right */
-    #wordmark {
-      position: fixed;
-      top: 20px; right: 20px;
-      width: 200px;
-      opacity: 0.9;
-      z-index: 20;
-    }
-
-    /* Responsive tweaks */
+    /* Responsive adjustments */
     @media (max-width: 600px) {
-      /* Start buttons lowered and shrink */
-      #startOptions {
-        bottom: 3rem;
-      }
-      #startOptions button {
-        width: 90vw;
-        font-size: 0.9rem;
-        padding: 0.8em;
-      }
-
-      /* Control bar shrink for small screens */
-      #controlBar {
-        top: 12%;
-        flex-wrap: wrap;
-        padding: 0.8rem 1rem;
-      }
-      #controlBar button {
-        font-size: 0.95rem;
-        padding: 0.8em 1em;
-      }
-
-      /* Ensure widget above bottom padding */
-      body {
-        padding-bottom: 6rem;
-      }
-      #widgetContainer {
-        margin-bottom: 6rem;
-      }
+      #startOptions { bottom: 3rem; }
+      #startOptions button { width: 90vw; font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
-  <!-- Wordmark Logo -->
   <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
 
   <!-- Start Tour Buttons -->
@@ -164,11 +94,9 @@
     <button data-agent="agent_FRIESIAN_ID">Start Tour<br>Friesian 🐚</button>
   </div>
 
-  <!-- Control Bar -->
-  <div id="controlBar">
+  <!-- Mute Bar -->
+  <div id="muteBar" class="hidden">
     <button id="muteBtn">Mute Music</button>
-    <button id="volDownBtn">Vol –</button>
-    <button id="volUpBtn">Vol +</button>
   </div>
 
   <!-- ElevenLabs Widget -->
@@ -180,56 +108,40 @@
   <!-- Embed Script -->
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
   <script>
-    const startOptions    = document.getElementById("startOptions");
-    const controlBar      = document.getElementById("controlBar");
-    const muteBtn         = document.getElementById("muteBtn");
-    const volDownBtn      = document.getElementById("volDownBtn");
-    const volUpBtn        = document.getElementById("volUpBtn");
-    const bgAudio         = document.getElementById("bgAudio");
-    const widgetContainer = document.getElementById("widgetContainer");
+    const startOptions    = document.getElementById('startOptions');
+    const muteBar         = document.getElementById('muteBar');
+    const muteBtn         = document.getElementById('muteBtn');
+    const bgAudio         = document.getElementById('bgAudio');
+    const widgetContainer = document.getElementById('widgetContainer');
 
-    function enhanceWidget(alpha = 0.85) {
-      const iv = setInterval(() => {
-        const iframe = document.querySelector("iframe");
-        if (!iframe) return;
+    function enhanceWidget(alpha=0.6) {
+      const iv = setInterval(()=>{
+        const iframe = document.querySelector('iframe');
+        if(!iframe) return;
         try {
-          const doc   = iframe.contentDocument || iframe.contentWindow.document;
-          const pane  = doc.querySelector('[class*="Container"]');
-          const btn   = doc.querySelector("button");
-          if (pane) {
-            pane.style.background     = `rgba(255,255,255,${alpha})`;
-            pane.style.backdropFilter = "blur(8px)";
-          }
-          if (btn && btn.innerText.toLowerCase().includes("begin")) {
-            btn.click(); clearInterval(iv);
-          }
-        } catch {}
-      }, 200);
+          const doc = iframe.contentDocument||iframe.contentWindow.document;
+          const pane = doc.querySelector('[class*="Container"]');
+          const btn = doc.querySelector('button');
+          if(pane) pane.style.backdropFilter='blur(8px)', pane.style.background=`rgba(255,255,255,${alpha})`;
+          if(btn && btn.innerText.toLowerCase().includes('begin')) btn.click(), clearInterval(iv);
+        }catch{};
+      },200);
     }
 
-    // Start Tour logic
-    startOptions.querySelectorAll("button").forEach(b => {
-      b.addEventListener("click", () => {
-        bgAudio.play().catch(() => {});
-        startOptions.classList.add("hidden");
-        controlBar.classList.add("visible");
+    startOptions.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click',()=>{
+        bgAudio.play().catch(()=>{});
+        startOptions.classList.add('hidden');
+        muteBar.classList.remove('hidden');
         widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${b.dataset.agent}"></elevenlabs-convai>`;
-        enhanceWidget(0.85);
+        enhanceWidget();
       });
     });
 
-    // Mute/unmute
-    muteBtn.addEventListener("click", () => {
+    muteBtn.addEventListener('click',()=>{
       bgAudio.muted = !bgAudio.muted;
-      muteBtn.textContent = bgAudio.muted ? "Unmute Music" : "Mute Music";
+      muteBtn.textContent = bgAudio.muted? 'Unmute Music':'Mute Music';
     });
-    // Volume control
-    volDownBtn.addEventListener("click", () =>
-      bgAudio.volume = Math.max(0, bgAudio.volume - 0.1)
-    );
-    volUpBtn.addEventListener("click", () =>
-      bgAudio.volume = Math.min(1, bgAudio.volume + 0.1)
-    );
   </script>
 </body>
 </html>
