@@ -36,7 +36,7 @@
       overflow: hidden;
     }
 
-    /* Start Tour buttons arranged vertically */
+    /* Start Tour buttons stacked vertically */
     #startOptions {
       display: flex;
       flex-direction: column;
@@ -52,10 +52,8 @@
       border: 2px solid #EE7440;
       border-radius: 32px;
       cursor: pointer;
-      font-size: 1rem;
-      font-weight: 700;
-      line-height: 1.2;
-      text-align: center;
+      font-size: 1rem; font-weight: 700;
+      line-height: 1.2; text-align: center;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       transition: background 0.3s, transform 0.2s;
     }
@@ -67,28 +65,24 @@
       display: none;
     }
 
-    /* Unified control bar centered */
+    /* Controls: absolutely centered at 35% down */
     #controlBar {
       position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+      top: 35%;
+      left: 50%;
+      transform: translateX(-50%);
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
       gap: 1rem;
       padding: 0.6rem 1.2rem;
       background: rgba(255,255,255,0.6);
       border: 2px solid #EE7440;
       border-radius: 32px;
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.4s ease;
       z-index: 20;
     }
     #controlBar.visible {
-      opacity: 1;
-      visibility: visible;
+      opacity: 1; visibility: visible;
     }
     #controlBar button {
       background: #EE7440E6;
@@ -96,8 +90,7 @@
       border: none;
       border-radius: 24px;
       padding: 0.5em 1em;
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-size: 0.9rem; font-weight: 700;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
@@ -106,10 +99,9 @@
       transform: scale(1.05);
     }
 
-    /* Widget container (centered by parent flex) */
+    /* Widget container remains flex-centered (50% down) */
     #widgetContainer {
-      width: 100%;
-      max-width: 600px;
+      width: 100%; max-width: 600px;
       z-index: 10;
     }
 
@@ -122,9 +114,9 @@
       z-index: 20;
     }
 
-    /* Responsive tweaks for phones */
+    /* Responsive tweaks */
     @media (max-width: 600px) {
-      /* Stack start buttons and shrink width */
+      /* Shrink and stack start buttons */
       #startOptions {
         gap: 0.5rem;
       }
@@ -134,12 +126,9 @@
         font-size: 0.9rem;
       }
 
-      /* Move control bar to bottom-center and stack if needed */
+      /* On phone, move controls slightly down if needed */
       #controlBar {
-        top: auto;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+        top: 40%;
         flex-direction: column;
         padding: 0.4rem 0.8rem;
       }
@@ -148,12 +137,12 @@
         padding: 0.4em 0.8em;
       }
 
-      /* Ensure widget sits above controls */
+      /* Ensure widget stays above any bottom UI */
       body {
-        padding-bottom: 8rem;
+        padding-bottom: 4rem;
       }
       #widgetContainer {
-        margin-bottom: 8rem;
+        margin-bottom: 4rem;
         max-width: 90vw;
       }
     }
@@ -163,7 +152,7 @@
   <!-- Wordmark Logo -->
   <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
 
-  <!-- Start Tour Buttons: English, Dutch center, Friesian -->
+  <!-- Start Tour Buttons -->
   <div id="startOptions">
     <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh">Start Tour<br>English 🇬🇧</button>
     <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30">Start Tour<br>Dutch 🇳🇱</button>
@@ -183,7 +172,7 @@
   <!-- Background Audio -->
   <audio id="bgAudio" src="ocean.mp3" loop preload="auto"></audio>
 
-  <!-- Embed Script -->
+  <!-- ElevenLabs Embed Script -->
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
   <script>
     const startOptions    = document.getElementById("startOptions");
@@ -213,6 +202,7 @@
       }, 200);
     }
 
+    // Start Tour logic
     startOptions.querySelectorAll("button").forEach(b => {
       b.addEventListener("click", () => {
         bgAudio.play().catch(() => {});
@@ -223,10 +213,12 @@
       });
     });
 
+    // Mute/unmute
     muteBtn.addEventListener("click", () => {
       bgAudio.muted = !bgAudio.muted;
       muteBtn.textContent = bgAudio.muted ? "Unmute Music" : "Mute Music";
     });
+    // Volume control
     volDownBtn.addEventListener("click", () =>
       bgAudio.volume = Math.max(0, bgAudio.volume - 0.1)
     );
