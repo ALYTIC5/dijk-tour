@@ -15,11 +15,20 @@
       font-family: 'Circular Std', sans-serif;
       position: relative; overflow: hidden;
     }
-
+    
     /* Wordmark top-right */
     #wordmark {
       position: fixed; top: 20px; right: 20px;
       width: 200px; opacity: 0.9; z-index: 20;
+    }
+
+    /* Container for widget + mute button */
+    #mainContent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      z-index: 10;
     }
 
     /* Start Tour buttons at bottom-center */
@@ -47,15 +56,14 @@
     }
     #startOptions.hidden { display: none; }
 
-    /* Mute button styled like tour buttons, near widget */
-    #muteBar {
-      position: absolute;
-      top: 55%; left: 50%; transform: translate(-50%, -50%);
-      width: 80vw; max-width: 12rem;
-      z-index: 20;
+    /* Widget container centered */
+    #widgetContainer {
+      width: 90vw; max-width: 600px;
     }
-    #muteBar button {
-      width: 100%;
+
+    /* Mute button like tour button, placed under widget */
+    #muteBar {
+      width: 90vw; max-width: 600px;
       padding: 1em;
       background: rgba(255,255,255,0.6);
       color: #1D1D1B;
@@ -67,27 +75,18 @@
       transition: background 0.3s, transform 0.2s;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
-    #muteBar button:hover {
+    #muteBar:hover {
       background: rgba(238,116,64,0.8);
       transform: scale(1.05);
     }
     #muteBar.hidden { display: none; }
 
-    /* Widget container centered */
-    #widgetContainer {
-      width: 100%; max-width: 600px;
-      z-index: 10;
-    }
-
     /* Responsive adjustments */
     @media (max-width: 600px) {
       #startOptions { bottom: 3rem; }
       #startOptions button { width: 90vw; font-size: 0.9rem; }
-
-      #muteBar {
-        top: 60%;
-      }
-      #muteBar button { width: 90vw; font-size: 0.9rem; }
+      #widgetContainer { width: 95vw; }
+      #muteBar { width: 95vw; font-size: 0.9rem; padding: 0.8em; }
     }
   </style>
 </head>
@@ -101,13 +100,11 @@
     <button data-agent="agent_FRIESIAN_ID">Start Tour<br>Friesian 🐚</button>
   </div>
 
-  <!-- Mute Button -->
-  <div id="muteBar" class="hidden">
-    <button id="muteBtn">Mute Music</button>
+  <!-- Main Content: widget + mute -->
+  <div id="mainContent">
+    <div id="widgetContainer"></div>
+    <button id="muteBar" class="hidden">Mute Music</button>
   </div>
-
-  <!-- ElevenLabs Widget -->
-  <div id="widgetContainer"></div>
 
   <!-- Background Audio -->
   <audio id="bgAudio" src="ocean.mp3" loop preload="auto"></audio>
@@ -117,7 +114,6 @@
   <script>
     const startOptions    = document.getElementById('startOptions');
     const muteBar         = document.getElementById('muteBar');
-    const muteBtn         = document.getElementById('muteBtn');
     const bgAudio         = document.getElementById('bgAudio');
     const widgetContainer = document.getElementById('widgetContainer');
 
@@ -139,15 +135,15 @@
       b.addEventListener('click',()=>{
         bgAudio.play().catch(()=>{});
         startOptions.classList.add('hidden');
-        muteBar.classList.remove('hidden');
         widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${b.dataset.agent}"></elevenlabs-convai>`;
+        muteBar.classList.remove('hidden');
         enhanceWidget();
       });
     });
 
-    muteBtn.addEventListener('click',()=>{
+    muteBar.addEventListener('click',()=>{
       bgAudio.muted = !bgAudio.muted;
-      muteBtn.textContent = bgAudio.muted? 'Unmute Music':'Mute Music';
+      muteBar.textContent = bgAudio.muted? 'Unmute Music':'Mute Music';
     });
   </script>
 </body>
