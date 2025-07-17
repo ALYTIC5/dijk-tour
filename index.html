@@ -6,7 +6,7 @@
   <title>Virtual Tour – Dijk van een Wijf</title>
   
   <style>
-    /* Full-screen background & centering */
+    /* Full-screen background & center layout */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
@@ -47,27 +47,29 @@
     }
     #startOptions.hidden { display: none; }
 
-    /* Mute button bar sized like widget */
+    /* Mute button styled like tour buttons, near widget */
     #muteBar {
-      position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 600px;
+      position: absolute;
+      top: 55%; left: 50%; transform: translate(-50%, -50%);
+      width: 80vw; max-width: 12rem;
       z-index: 20;
     }
     #muteBar button {
       width: 100%;
-      padding: 1.2em;
-      background: #EE7440;
+      padding: 1em;
+      background: rgba(255,255,255,0.6);
       color: #1D1D1B;
-      border: none;
+      border: 2px solid #EE7440;
       border-radius: 32px;
-      font: 700 1.1rem/1.2 'Circular Std', sans-serif;
+      font: 700 1rem/1.2 'Circular Std', sans-serif;
+      text-align: center;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
     #muteBar button:hover {
-      background: #e66426;
-      transform: scale(1.03);
+      background: rgba(238,116,64,0.8);
+      transform: scale(1.05);
     }
     #muteBar.hidden { display: none; }
 
@@ -81,6 +83,11 @@
     @media (max-width: 600px) {
       #startOptions { bottom: 3rem; }
       #startOptions button { width: 90vw; font-size: 0.9rem; }
+
+      #muteBar {
+        top: 60%;
+      }
+      #muteBar button { width: 90vw; font-size: 0.9rem; }
     }
   </style>
 </head>
@@ -94,7 +101,7 @@
     <button data-agent="agent_FRIESIAN_ID">Start Tour<br>Friesian 🐚</button>
   </div>
 
-  <!-- Mute Bar -->
+  <!-- Mute Button -->
   <div id="muteBar" class="hidden">
     <button id="muteBtn">Mute Music</button>
   </div>
