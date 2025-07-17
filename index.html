@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Virtual Tour – Dijk van een Wijf</title>
 
-  <!-- Circular Std import -->
+  <!-- Import Circular Std -->
   <style>
     @font-face {
       font-family: 'Circular Std';
@@ -22,7 +22,7 @@
   </style>
 
   <style>
-    /* ===== 1) Full-screen background & flex centering ===== */
+    /* 1) Full-screen background & center layout */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
@@ -36,7 +36,7 @@
       overflow: hidden;
     }
 
-    /* ===== 2) START TOUR BUTTONS ===== */
+    /* 2) Start Tour buttons */
     #startOptions {
       display: flex;
       gap: 1rem;
@@ -50,9 +50,9 @@
       border: 2px solid #EE7440;
       border-radius: 32px;
       cursor: pointer;
-      font-size: 1rem; font-weight:700;
-      line-height:1.2; text-align:center;
-      box-shadow:0 8px 24px rgba(0,0,0,0.15);
+      font-size: 1rem; font-weight: 700;
+      line-height: 1.2; text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       transition: background 0.3s, transform 0.2s;
     }
     #startOptions button:hover {
@@ -63,32 +63,32 @@
       display: none;
     }
 
-    /* ===== 3) UNIFIED CONTROL BAR ===== */
+    /* 3) Unified control bar */
     #controlBar {
       position: fixed;
       top: 20px; left: 20px;
-      display: flex; gap:1rem;
-      padding:0.6rem 1.2rem;
+      display: flex; gap: 1rem;
+      padding: 0.6rem 1.2rem;
       background: rgba(255,255,255,0.6);
-      border:2px solid #EE7440;
-      border-radius:32px;
+      border: 2px solid #EE7440;
+      border-radius: 32px;
       transform: translateX(-20px);
-      opacity:0; visibility:hidden;
+      opacity: 0; visibility: hidden;
       transition: opacity 0.4s ease, transform 0.4s ease;
-      z-index:20;
+      z-index: 20;
     }
     #controlBar.visible {
       transform: translateX(0);
-      opacity:1; visibility:visible;
+      opacity: 1; visibility: visible;
     }
     #controlBar button {
       background: #EE7440E6;
       color: #1D1D1B;
       border: none;
-      border-radius:24px;
-      padding:0.5em 1em;
-      font-size:0.9rem; font-weight:700;
-      cursor:pointer;
+      border-radius: 24px;
+      padding: 0.5em 1em;
+      font-size: 0.9rem; font-weight: 700;
+      cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
     #controlBar button:hover {
@@ -96,62 +96,73 @@
       transform: scale(1.05);
     }
 
-    /* ===== 4) WIDGET CONTAINER (no masking) ===== */
+    /* 4) Widget container */
     #widgetContainer {
-      width: 100%;
-      max-width: 600px;
+      width: 100%; max-width: 600px;
       z-index: 10;
     }
 
-    /* ===== 5) WORDMARK TOP-RIGHT ===== */
+    /* 5) Wordmark top-right */
     #wordmark {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 250px;   
+      top: 20px; right: 20px;
+      width: 200px;
       opacity: 0.9;
       z-index: 20;
     }
 
-    /* ===== 6) RESPONSIVE ===== */
-    @media (max-width:600px) {
+    /* 6) Responsive tweaks */
+    @media (max-width: 600px) {
+      /* stack start buttons & shrink */
       #startOptions {
-        flex-direction:column;
+        flex-direction: column;
+        gap: 0.5rem;
       }
       #startOptions button {
-        width:80vw;
+        width: 80vw;
+        padding: 0.8em;
+        font-size: 0.9rem;
       }
+
+      /* center control bar at bottom */
       #controlBar {
-        top:auto; bottom:20px;
-        left:50%; transform:translateX(-50%) translateX(-20px);
+        top: auto; bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
       }
       #controlBar button {
-        font-size:0.85rem; padding:0.4em 0.8em;
+        padding: 0.4em 0.8em;
+        font-size: 0.85rem;
+      }
+
+      /* push widget up above controls */
+      body {
+        padding-bottom: 8rem;
       }
       #widgetContainer {
-        max-width:90vw;
+        margin-bottom: 8rem;
+        max-width: 90vw;
       }
     }
   </style>
 </head>
 <body>
-
-  <!-- Wordmark -->
+  <!-- Wordmark Logo -->
   <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
 
-  <!-- Start Tour -->
+  <!-- Start Tour Buttons -->
   <div id="startOptions">
     <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh">
-      Start Tour<br>English 
+      Start Tour<br>English 🇬🇧
     </button>
     <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30">
-      Start Rondleiding<br>Dutch 
+      Start Tour<br>Dutch 🇳🇱
     </button>
   </div>
 
   <!-- Control Bar -->
   <div id="controlBar">
-    <button id="muteBtn">Mute Sound</button>
+    <button id="muteBtn">Mute Music</button>
     <button id="volDownBtn">Vol –</button>
     <button id="volUpBtn">Vol +</button>
   </div>
@@ -162,7 +173,7 @@
   <!-- Background Audio -->
   <audio id="bgAudio" src="ocean.mp3" loop preload="auto"></audio>
 
-  <!-- Embed Script -->
+  <!-- ElevenLabs Embed Script -->
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
   <script>
     const startOptions    = document.getElementById("startOptions");
@@ -192,6 +203,7 @@
       }, 200);
     }
 
+    // Start Tour logic
     startOptions.querySelectorAll("button").forEach(b => {
       b.addEventListener("click", () => {
         bgAudio.play().catch(() => {});
@@ -202,10 +214,12 @@
       });
     });
 
+    // Mute/unmute
     muteBtn.addEventListener("click", () => {
       bgAudio.muted = !bgAudio.muted;
-      muteBtn.textContent = bgAudio.muted ? "Unmute Sound" : "Mute Sound";
+      muteBtn.textContent = bgAudio.muted ? "Unmute Music" : "Mute Music";
     });
+    // Volume control
     volDownBtn.addEventListener("click", () =>
       bgAudio.volume = Math.max(0, bgAudio.volume - 0.1)
     );
