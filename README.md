@@ -101,3 +101,13 @@ Here are ways to further polish and professionalize the project:
    (No server required — static site)
 
 4. Or use VSCode’s Live Server extension
+
+---
+
+
+📸 Credits
+Branding & Concept — “Dijk van een Wijf” design documents
+
+Voice & AI Agent — ElevenLabs Conversational AI
+
+Soundscapes — Wadden Sea project (Herfst, Zommer, etc.)
