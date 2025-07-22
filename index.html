@@ -2,28 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Virtual Tour – Dijk van een Wijf</title>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dijk van een Wijf — Audio Tour</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Circular+Std:wght@400;700&display=swap">
   <style>
-    /* Full-screen background & center layout */
-    html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      background: url('background.jpg') center/cover no-repeat fixed;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Circular Std', sans-serif;
-      position: relative; overflow: hidden;
-    }
-    
-    /* Wordmark top-right */
-    #wordmark {
-      position: fixed; top: 20px; right: 20px;
-      width: 200px; opacity: 0.9; z-index: 20;
+    :root {
+      --orange: #EE7440;
+      --black: #1D1D1B;
+      --glass: rgba(255, 255, 255, 0.6);
     }
 
-    /* Container for widget + mute button */
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Circular Std', sans-serif;
+      background: url('background.jpg') center/cover no-repeat fixed;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      color: var(--black);
+      overflow: hidden;
+    }
+
+    #introScreen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      z-index: 99;
+    }
+
+    #introScreen h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #introScreen button {
+      background: var(--glass);
+      border: 2px solid var(--orange);
+      color: var(--black);
+      border-radius: 2rem;
+      padding: 1rem 2rem;
+      font-weight: bold;
+      font-size: 1rem;
+      margin-top: 1rem;
+      backdrop-filter: blur(6px);
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    #introScreen button:hover {
+      background: var(--orange);
+      color: white;
+      transform: scale(1.05);
+    }
+
+    #wordmark {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 140px;
+      opacity: 0.9;
+      z-index: 20;
+    }
+
+    #startOptions {
+      position: absolute;
+      bottom: 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+      z-index: 20;
+    }
+
+    #startOptions button {
+      width: 80vw;
+      max-width: 300px;
+      background: var(--glass);
+      color: var(--black);
+      border: 2px solid var(--orange);
+      border-radius: 2rem;
+      padding: 1rem;
+      font-weight: 700;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+
+    #startOptions button:hover {
+      background: var(--orange);
+      color: white;
+      transform: scale(1.05);
+    }
+
     #mainContent {
+      margin-top: auto;
+      padding-bottom: 3rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -31,120 +116,127 @@
       z-index: 10;
     }
 
-    /* Start Tour buttons at bottom-center */
-    #startOptions {
-      position: absolute; bottom: 4rem; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 1rem;
-      z-index: 20;
-    }
-    #startOptions button {
-      width: 80vw; max-width: 12rem;
-      padding: 1em;
-      background: rgba(255,255,255,0.6);
-      color: #1D1D1B;
-      border: 2px solid #EE7440;
-      border-radius: 32px;
-      font: 700 1rem/1.2 'Circular Std', sans-serif;
-      text-align: center;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+    #widgetContainer, #muteBar, #volumeControl {
+      width: 90vw;
+      max-width: 600px;
+      background: var(--glass);
+      border: 2px solid var(--orange);
+      border-radius: 2rem;
+      padding: 1rem;
+      backdrop-filter: blur(6px);
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
-    #startOptions button:hover {
-      background: rgba(238,116,64,0.8);
-      transform: scale(1.05);
-    }
-    #startOptions.hidden { display: none; }
 
-    /* Widget container centered */
-    #widgetContainer {
-      width: 90vw; max-width: 600px;
-    }
-
-    /* Mute button like tour button, placed under widget */
-    #muteBar {
-      width: 90vw; max-width: 600px;
-      padding: 1em;
-      background: rgba(255,255,255,0.6);
-      color: #1D1D1B;
-      border: 2px solid #EE7440;
-      border-radius: 32px;
-      font: 700 1rem/1.2 'Circular Std', sans-serif;
+    #muteBar, #volumeControl {
       text-align: center;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
-    #muteBar:hover {
-      background: rgba(238,116,64,0.8);
-      transform: scale(1.05);
-    }
-    #muteBar.hidden { display: none; }
 
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-      #startOptions { bottom: 3rem; }
-      #startOptions button { width: 90vw; font-size: 0.9rem; }
-      #widgetContainer { width: 95vw; }
-      #muteBar { width: 95vw; font-size: 0.9rem; padding: 0.8em; }
+    #volumeSlider {
+      width: 100%;
     }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
-  <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
-
-  <!-- Start Tour Buttons -->
-  <div id="startOptions">
-    <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh">Start Tour<br>English 🇬🇧</button>
-    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30">Start Tour<br>Dutch 🇳🇱</button>
-    <button data-agent="agent_FRIESIAN_ID">Start Tour<br>Friesian 🐚</button>
+  <div id="introScreen">
+    <h1>Welcome to Dijk van een Wijf</h1>
+    <p>For the best experience, use headphones and enable sound.</p>
+    <button onclick="startApp()">Begin</button>
   </div>
 
-  <!-- Main Content: widget + mute -->
+  <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Wordmark">
+
+  <div id="startOptions" class="hidden">
+    <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh">Start Tour – English 🇬🇧</button>
+    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30">Start Tour – Dutch 🇳🇱</button>
+    <button data-agent="agent_FRIESIAN_ID">Start Tour – Friesian 🐚</button>
+  </div>
+
   <div id="mainContent">
     <div id="widgetContainer"></div>
     <button id="muteBar" class="hidden">Mute Music</button>
+    <div id="volumeControl" class="hidden">
+      <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="1">
+    </div>
   </div>
 
-  <!-- Background Audio -->
-  <audio id="bgAudio" src="ocean.mp3" loop preload="auto"></audio>
+  <audio id="bgAudio" loop preload="auto"></audio>
 
-  <!-- Embed Script -->
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
   <script>
-    const startOptions    = document.getElementById('startOptions');
-    const muteBar         = document.getElementById('muteBar');
-    const bgAudio         = document.getElementById('bgAudio');
-    const widgetContainer = document.getElementById('widgetContainer');
+    const bgAudio = document.getElementById('bgAudio');
+    const tracks = [
+      'Soundscapes - Lente - Dijk van een Wijf V2.mp3',
+      'Soundscapes - Zommer - Dijk van een Wijf V2.mp3',
+      'Soundscapes - Herfst - Dijk van een Wijf V2.mp3',
+      'Soundscapes - Winter - Dijk van een Wijf V2.mp3'
+    ];
+    let currentTrack = 0;
 
-    function enhanceWidget(alpha=0.6) {
-      const iv = setInterval(()=>{
-        const iframe = document.querySelector('iframe');
-        if(!iframe) return;
-        try {
-          const doc = iframe.contentDocument||iframe.contentWindow.document;
-          const pane = doc.querySelector('[class*="Container"]');
-          const btn = doc.querySelector('button');
-          if(pane) pane.style.backdropFilter='blur(8px)', pane.style.background=`rgba(255,255,255,${alpha})`;
-          if(btn && btn.innerText.toLowerCase().includes('begin')) btn.click(), clearInterval(iv);
-        }catch{};
-      },200);
+    function playTrack(idx) {
+      bgAudio.src = tracks[idx];
+      bgAudio.load();
+      bgAudio.play();
     }
 
-    startOptions.querySelectorAll('button').forEach(b=>{
-      b.addEventListener('click',()=>{
-        bgAudio.play().catch(()=>{});
+    bgAudio.addEventListener('ended', () => {
+      currentTrack = (currentTrack + 1) % tracks.length;
+      playTrack(currentTrack);
+    });
+
+    const startOptions = document.getElementById('startOptions');
+    const muteBar = document.getElementById('muteBar');
+    const volumeControl = document.getElementById('volumeControl');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const widgetContainer = document.getElementById('widgetContainer');
+
+    volumeSlider.addEventListener('input', () => {
+      bgAudio.volume = volumeSlider.value;
+    });
+
+    muteBar.addEventListener('click', () => {
+      bgAudio.muted = !bgAudio.muted;
+      muteBar.textContent = bgAudio.muted ? 'Unmute Music' : 'Mute Music';
+    });
+
+    startOptions.querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => {
+        playTrack(currentTrack = 0);
         startOptions.classList.add('hidden');
         widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${b.dataset.agent}"></elevenlabs-convai>`;
         muteBar.classList.remove('hidden');
+        volumeControl.classList.remove('hidden');
         enhanceWidget();
       });
     });
 
-    muteBar.addEventListener('click',()=>{
-      bgAudio.muted = !bgAudio.muted;
-      muteBar.textContent = bgAudio.muted? 'Unmute Music':'Mute Music';
-    });
+    function startApp() {
+      document.getElementById('introScreen').style.display = 'none';
+      startOptions.classList.remove('hidden');
+    }
+
+    function enhanceWidget(alpha = 0.6) {
+      const iv = setInterval(() => {
+        const iframe = document.querySelector('iframe');
+        if (!iframe) return;
+        try {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          const pane = doc.querySelector('[class*="Container"]');
+          const btn = doc.querySelector('button');
+          if (pane) {
+            pane.style.backdropFilter = 'blur(8px)';
+            pane.style.background = `rgba(255,255,255,${alpha})`;
+          }
+          if (btn && btn.innerText.toLowerCase().includes('begin')) {
+            btn.click();
+            clearInterval(iv);
+          }
+        } catch {}
+      }, 200);
+    }
   </script>
 </body>
 </html>

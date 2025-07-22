@@ -104,10 +104,17 @@ Here are ways to further polish and professionalize the project:
 
 ---
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 569c6e1 (Update site)
 📸 Credits
 Branding & Concept — “Dijk van een Wijf” design documents
 
 Voice & AI Agent — ElevenLabs Conversational AI
 
+<<<<<<< HEAD
 Soundscapes — Wadden Sea project (Herfst, Zommer, etc.)
+=======
+Soundscapes — Wadden Sea project (Herfst, Zommer, etc.)
+>>>>>>> 569c6e1 (Update site)
