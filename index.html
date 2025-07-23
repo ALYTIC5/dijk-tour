@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Virtual Tour – Dijk van een Wijf</title>
   <style>
-    /* Full-screen background & center layout */
     html, body {
       margin: 0; padding: 0;
       width: 100%; height: 100%;
@@ -14,14 +13,12 @@
       font-family: 'Circular Std', sans-serif;
       position: relative; overflow: hidden;
     }
-    /* Wordmark (logo) at top-right (respect safe-area) */
     #wordmark {
       position: fixed;
       top: calc(env(safe-area-inset-top, 0px) + 20px);
       right: 20px;
       width: 200px; opacity: 0.9; z-index: 20;
     }
-    /* Welcome overlay text */
     #welcomeOverlay {
       position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
       color: #fff;
@@ -41,7 +38,6 @@
       font: 400 1rem 'Circular Std', sans-serif;
       margin: 0;
     }
-    /* Start Tour buttons at bottom-center (with safe-area) */
     #startOptions {
       position: absolute;
       bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
@@ -72,20 +68,67 @@
       color: #fff;
     }
     #startOptions.hidden { display: none; }
-    /* Fade-out effect */
     #startOptions.fadeOut, #welcomeOverlay.fadeOut {
       opacity: 0;
     }
-    /* Main content: widget + volume slider container */
+    /* Added Skip Intro button styling */
+    #skipIntro {
+      position: absolute;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw; max-width: 12rem;
+      padding: 1em;
+      background: rgba(255,255,255,0.6);
+      color: #1D1D1B;
+      border: 2px solid #EE7440;
+      border-radius: 32px;
+      font: 700 1rem/1.2 'Circular Std', sans-serif;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      z-index: 21;
+    }
+    #skipIntro.hidden { display: none; }
+    #skipIntro:hover {
+      background: rgba(238,116,64,0.8);
+      transform: scale(1.05);
+    }
+    #skipIntro:active {
+      background: #EE7440;
+      color: #fff;
+    }
+    /* Added Mute Soundscape toggle button styling */
+    #muteToggle {
+      width: 80vw; max-width: 12rem;
+      padding: 1em;
+      background: rgba(255,255,255,0.6);
+      color: #1D1D1B;
+      border: 2px solid #EE7440;
+      border-radius: 32px;
+      font: 700 1rem/1.2 'Circular Std', sans-serif;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    #muteToggle.hidden { display: none; }
+    #muteToggle:hover {
+      background: rgba(238,116,64,0.8);
+      transform: scale(1.05);
+    }
+    #muteToggle:active {
+      background: #EE7440;
+      color: #fff;
+    }
     #mainContent {
       display: flex; flex-direction: column; align-items: center; gap: 1rem;
       z-index: 10;
     }
-    /* Widget container */
     #widgetContainer {
       width: 90vw; max-width: 600px;
     }
-    /* Volume slider container (styled like buttons) */
     #volumeControl {
       width: 90vw; max-width: 600px;
       padding: 0.5em 1em;
@@ -98,7 +141,6 @@
     }
     #volumeControl.hidden { display: none; }
     #volumeControl.show { opacity: 1; }
-    /* Volume slider input styling */
     #volumeSlider {
       width: 100%;
       -webkit-appearance: none; appearance: none;
@@ -108,19 +150,16 @@
       border-radius: 3px;
       cursor: pointer;
     }
-    /* Track (WebKit) */
     #volumeSlider::-webkit-slider-runnable-track {
       width: 100%; height: 6px;
       background: rgba(255,255,255,0.5);
       border-radius: 3px;
     }
-    /* Track (Firefox) */
     #volumeSlider::-moz-range-track {
       width: 100%; height: 6px;
       background: rgba(255,255,255,0.5);
       border-radius: 3px;
     }
-    /* Thumb (WebKit) */
     #volumeSlider::-webkit-slider-thumb {
       -webkit-appearance: none;
       width: 20px; height: 20px;
@@ -129,9 +168,8 @@
       border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       cursor: pointer;
-      margin-top: -7px; /* Center thumb on track */
+      margin-top: -7px;
     }
-    /* Thumb (Firefox) */
     #volumeSlider::-moz-range-thumb {
       width: 20px; height: 20px;
       background: #EE7440;
@@ -140,7 +178,6 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       cursor: pointer;
     }
-    /* Responsive adjustments */
     @media (max-width: 600px) {
       #startOptions { bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem); }
       #startOptions button { width: 90vw; font-size: 0.9rem; }
@@ -149,35 +186,59 @@
       #welcomeOverlay { padding: 0 1rem; }
       #welcomeOverlay h1 { font-size: 1.25rem; }
       #welcomeOverlay p { font-size: 0.9rem; }
+      /* Responsive adjustments for Skip and Mute buttons */
+      #skipIntro { bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem); width: 90vw; font-size: 0.9rem; }
+      #muteToggle { width: 90vw; font-size: 0.9rem; }
     }
     #welcomeOverlay.hidden { display: none; }
   </style>
 </head>
 <body>
   <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
-  <!-- Welcome Message Overlay -->
   <div id="welcomeOverlay">
     <h1>Welcome to Dijk van een Wijf</h1>
     <p>For the best experience, please use headphones and turn your sound on.</p>
   </div>
-  <!-- Start Tour Buttons (Language Selection) -->
   <div id="startOptions">
-    <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh">Start Tour<br>English 🇬🇧</button>
-    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30">Start Tour<br>Dutch 🇳🇱</button>
-    <button data-agent="agent_FRIESIAN_ID">Start Tour<br>Friesian 🐚</button>
+    <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh" data-lang="EN">Start Tour<br>English 🇬🇧</button>
+    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="NL">Start Tour<br>Dutch 🇳🇱</button>
+    <button data-agent="agent_FRIESIAN_ID" data-lang="FR">Start Tour<br>Friesian 🐚</button>
   </div>
-  <!-- Main Content: widget container + volume slider -->
+  <!-- Skip Intro button (hidden by default) -->
+  <button id="skipIntro" class="hidden">Skip Intro</button>
   <div id="mainContent">
     <div id="widgetContainer"></div>
     <div id="volumeControl" class="hidden">
       <input type="range" id="volumeSlider" min="0" max="100" value="100" />
     </div>
+    <!-- Mute Soundscape toggle button (hidden by default) -->
+    <button id="muteToggle" class="hidden">Mute Soundscape</button>
   </div>
-  <!-- Audio element for background soundscape -->
   <audio id="bgAudio" loop preload="auto"></audio>
-  <!-- ElevenLabs ConvAI Widget script -->
+  <audio id="introAudio" preload="auto"></audio>
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
   <script>
+    const introTracks = {
+      EN: 'Dijk van een Wijf - Introtext EN.mp3',
+      NL: 'Dijk van een Wijf - Introtext NL.mp3',
+      FR: 'Dijk van een Wijf - Introtext FR.mp3'
+    };
+    /* Text mappings for Skip Intro and Mute toggle in different languages */
+    const skipTexts = {
+      EN: 'Skip Intro',
+      NL: 'Intro overslaan',
+      FR: "Passer l'intro"
+    };
+    const muteTexts = {
+      EN: 'Mute Soundscape',
+      NL: 'Achtergrondgeluid dempen',
+      FR: 'Couper le son'
+    };
+    const unmuteTexts = {
+      EN: 'Unmute Soundscape',
+      NL: 'Achtergrondgeluid aanzetten',
+      FR: 'Rétablir le son'
+    };
     const tracks = [
       'Soundscapes - Lente - Dijk van een Wijf V2.mp3',
       'Soundscapes - Zommer - Dijk van een Wijf V2.mp3',
@@ -186,8 +247,8 @@
     ];
     let currentTrack = 0;
     const bgAudio = document.getElementById('bgAudio');
+    const introAudio = document.getElementById('introAudio');
     let audioCtx, gainNode;
-    // Load and play current track, then on end cycle to next
     function playTrack(idx) {
       bgAudio.src = tracks[idx];
       bgAudio.load();
@@ -197,12 +258,14 @@
       currentTrack = (currentTrack + 1) % tracks.length;
       playTrack(currentTrack);
     });
-    const startOptions   = document.getElementById('startOptions');
+    const startOptions = document.getElementById('startOptions');
     const widgetContainer = document.getElementById('widgetContainer');
-    const volumeControl  = document.getElementById('volumeControl');
-    const volumeSlider   = document.getElementById('volumeSlider');
+    const volumeControl = document.getElementById('volumeControl');
+    const volumeSlider = document.getElementById('volumeSlider');
     const welcomeOverlay = document.getElementById('welcomeOverlay');
-    // Enhance the ConvAI widget appearance (glassmorphic styling, auto-begin)
+    /* Get Skip Intro and Mute toggle elements */
+    const skipIntro = document.getElementById('skipIntro');
+    const muteToggle = document.getElementById('muteToggle');
     function enhanceWidget(alpha = 0.6) {
       const iv = setInterval(() => {
         const iframe = document.querySelector('iframe');
@@ -219,67 +282,84 @@
             btn.click();
             clearInterval(iv);
           }
-        } catch (e) { /* ignore cross-domain errors */ }
+        } catch (e) {}
       }, 200);
     }
-    // Update slider background fill (orange portion matches volume)
     function updateVolumeSliderBG() {
       const val = volumeSlider.value;
       volumeSlider.style.background =
         `linear-gradient(to right, #EE7440 0%, #EE7440 ${val}%, rgba(255,255,255,0.5) ${val}%, rgba(255,255,255,0.5) 100%)`;
     }
     volumeSlider.addEventListener('input', () => {
-      if (gainNode) {
-        gainNode.gain.value = volumeSlider.value / 100;
-      }
+      if (gainNode) gainNode.gain.value = volumeSlider.value / 100;
       updateVolumeSliderBG();
     });
-    // Handle language selection button clicks
+    /* Skip Intro button functionality */
+    skipIntro.addEventListener('click', () => {
+      introAudio.pause();
+      if (introAudio.onended) introAudio.onended();
+    });
+    /* Mute Soundscape toggle functionality */
+    muteToggle.addEventListener('click', () => {
+      const lang = muteToggle.dataset.lang || 'EN';
+      if (bgAudio.paused) {
+        // Resume background soundscape
+        bgAudio.play();
+        muteToggle.textContent = muteTexts[lang];
+      } else {
+        // Mute (pause) background soundscape
+        bgAudio.pause();
+        muteToggle.textContent = unmuteTexts[lang];
+      }
+    });
     startOptions.querySelectorAll('button').forEach(button => {
       button.addEventListener('click', () => {
-        // Flash button (feedback)
+        const agentId = button.dataset.agent;
+        const lang = button.dataset.lang;
+        const introFile = introTracks[lang];
         button.style.background = '#EE7440';
         button.style.color = '#fff';
-        // Set up audio context and gain for volume control (iOS Safari workaround)
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
           gainNode = audioCtx.createGain();
-          const source = audioCtx.createMediaElementSource(bgAudio);
-          source.connect(gainNode);
+          const src1 = audioCtx.createMediaElementSource(bgAudio);
+          const src2 = audioCtx.createMediaElementSource(introAudio);
+          src1.connect(gainNode);
+          src2.connect(gainNode);
           gainNode.connect(audioCtx.destination);
-          if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-          }
+          if (audioCtx.state === 'suspended') audioCtx.resume();
         }
-        // Start background soundscape if not already playing
         if (bgAudio.paused) {
           currentTrack = 0;
           playTrack(currentTrack);
         }
-        // Fade out welcome overlay and language buttons
         setTimeout(() => {
           startOptions.style.pointerEvents = 'none';
           welcomeOverlay.classList.add('fadeOut');
           startOptions.classList.add('fadeOut');
         }, 100);
-        // After fade animation, hide start options and show main content
+        introAudio.src = introFile;
+        introAudio.play();
+        // Show "Skip Intro" button in the appropriate language during intro
+        skipIntro.textContent = skipTexts[lang];
         setTimeout(() => {
+          skipIntro.classList.remove('hidden');
+        }, 500);
+        introAudio.onended = () => {
           startOptions.classList.add('hidden');
           welcomeOverlay.classList.add('hidden');
-          // Load the selected language ConvAI widget
-          widgetContainer.innerHTML =
-            `<elevenlabs-convai agent-id="${button.dataset.agent}"></elevenlabs-convai>`;
-          // Show volume slider (smooth reveal)
+          widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${agentId}"></elevenlabs-convai>`;
           volumeControl.classList.remove('hidden');
-          requestAnimationFrame(() => {
-            volumeControl.classList.add('show');
-          });
-          // Initialize slider appearance and volume
+          requestAnimationFrame(() => volumeControl.classList.add('show'));
           updateVolumeSliderBG();
           if (gainNode) gainNode.gain.value = volumeSlider.value / 100;
-          // Enhance the ConvAI widget styling and auto-start
           enhanceWidget();
-        }, 600);
+          // Hide Skip Intro and show Mute Soundscape toggle when chat interface is ready
+          skipIntro.classList.add('hidden');
+          muteToggle.dataset.lang = lang;
+          muteToggle.textContent = muteTexts[lang];
+          muteToggle.classList.remove('hidden');
+        };
       });
     });
   </script>
