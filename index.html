@@ -195,35 +195,34 @@
 </head>
 <body>
   <img id="wordmark" src="Dijk_van_een_Wijf_Logo.png" alt="Dijk van een Wijf">
-  <div id="welcomeOverlay">
-    
-    
-  </div>
+  <div id="welcomeOverlay"></div>
   <div id="startOptions">
     <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh" data-lang="EN">Start Tour<br>English</button>
     <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="NL">Rondleiding starten<br>Dutch</button>
     <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="FR">Rondleiding starten<br>Frisian</button>
   </div>
-  <!-- Skip Intro button (hidden by default) -->
   <button id="skipIntro" class="hidden">Skip Intro</button>
   <div id="mainContent">
     <div id="widgetContainer"></div>
     <div id="volumeControl" class="hidden">
-      <input type="range" id="volumeSlider" min="0" max="100" value="100" />
+      <input type="range" id="volumeSlider" min="0" max="100" value="50" />
     </div>
-    <!-- Mute Soundscape toggle button (hidden by default) -->
     <button id="muteToggle" class="hidden">Mute Soundscape</button>
   </div>
   <audio id="bgAudio" loop preload="auto"></audio>
   <audio id="introAudio" preload="auto"></audio>
   <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async></script>
   <script>
-    const introTracks = {
-      EN: 'Dijk van een Wijf - Introtext EN.mp3',
-      NL: 'Dijk van een Wijf - Introtext NL.mp3',
-      FR: 'Dijk van een Wijf - Introtext FR.mp3'
+    const introTracksPart1 = {
+      EN: 'Dijk van een Wijf - Introtext EN_1.1.mp3',
+      NL: 'Dijk van een Wijf - Introtext NL_1.1.mp3',
+      FR: 'Dijk van een Wijf - Introtext FR_1.1.mp3'
     };
-    /* Text mappings for Skip Intro and Mute toggle in different languages */
+    const introTracksPart2 = {
+      EN: 'Dijk van een Wijf - Introtext EN_1.2.mp3',
+      NL: 'Dijk van een Wijf - Introtext NL_1.2.mp3',
+      FR: 'Dijk van een Wijf - Introtext FR_1.2.mp3'
+    };
     const skipTexts = {
       EN: 'Skip Intro',
       NL: 'Intro overslaan',
@@ -254,16 +253,11 @@
       bgAudio.load();
       bgAudio.play();
     }
-    bgAudio.addEventListener('ended', () => {
-      currentTrack = (currentTrack + 1) % tracks.length;
-      playTrack(currentTrack);
-    });
     const startOptions = document.getElementById('startOptions');
     const widgetContainer = document.getElementById('widgetContainer');
     const volumeControl = document.getElementById('volumeControl');
     const volumeSlider = document.getElementById('volumeSlider');
     const welcomeOverlay = document.getElementById('welcomeOverlay');
-    /* Get Skip Intro and Mute toggle elements */
     const skipIntro = document.getElementById('skipIntro');
     const muteToggle = document.getElementById('muteToggle');
     function enhanceWidget(alpha = 0.6) {
@@ -294,20 +288,16 @@
       if (gainNode) gainNode.gain.value = volumeSlider.value / 100;
       updateVolumeSliderBG();
     });
-    /* Skip Intro button functionality */
     skipIntro.addEventListener('click', () => {
       introAudio.pause();
       if (introAudio.onended) introAudio.onended();
     });
-    /* Mute Soundscape toggle functionality */
     muteToggle.addEventListener('click', () => {
       const lang = muteToggle.dataset.lang || 'EN';
       if (bgAudio.paused) {
-        // Resume background soundscape
         bgAudio.play();
         muteToggle.textContent = muteTexts[lang];
       } else {
-        // Mute (pause) background soundscape
         bgAudio.pause();
         muteToggle.textContent = unmuteTexts[lang];
       }
@@ -316,7 +306,8 @@
       button.addEventListener('click', () => {
         const agentId = button.dataset.agent;
         const lang = button.dataset.lang;
-        const introFile = introTracks[lang];
+        const introFile1 = introTracksPart1[lang];
+        const introFile2 = introTracksPart2[lang];
         button.style.background = '#EE7440';
         button.style.color = '#fff';
         if (!audioCtx) {
@@ -330,7 +321,19 @@
           if (audioCtx.state === 'suspended') audioCtx.resume();
         }
         if (bgAudio.paused) {
-          currentTrack = 0;
+          // Select the appropriate seasonal soundscape track based on current month
+          const month = new Date().getMonth();
+          let seasonIndex;
+          if (month >= 2 && month <= 4) {
+            seasonIndex = 0; // Spring (Lente)
+          } else if (month >= 5 && month <= 7) {
+            seasonIndex = 1; // Summer (Zommer)
+          } else if (month >= 8 && month <= 10) {
+            seasonIndex = 2; // Fall (Herfst)
+          } else {
+            seasonIndex = 3; // Winter (Winter)
+          }
+          currentTrack = seasonIndex;
           playTrack(currentTrack);
         }
         setTimeout(() => {
@@ -338,14 +341,13 @@
           welcomeOverlay.classList.add('fadeOut');
           startOptions.classList.add('fadeOut');
         }, 100);
-        introAudio.src = introFile;
+        introAudio.src = introFile1;
         introAudio.play();
-        // Show "Skip Intro" button in the appropriate language during intro
         skipIntro.textContent = skipTexts[lang];
         setTimeout(() => {
           skipIntro.classList.remove('hidden');
         }, 500);
-        introAudio.onended = () => {
+        const finishIntro = () => {
           startOptions.classList.add('hidden');
           welcomeOverlay.classList.add('hidden');
           widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${agentId}"></elevenlabs-convai>`;
@@ -354,14 +356,21 @@
           updateVolumeSliderBG();
           if (gainNode) gainNode.gain.value = volumeSlider.value / 100;
           enhanceWidget();
-          // Hide Skip Intro and show Mute Soundscape toggle when chat interface is ready
           skipIntro.classList.add('hidden');
           muteToggle.dataset.lang = lang;
           muteToggle.textContent = muteTexts[lang];
           muteToggle.classList.remove('hidden');
+          // Play the second part of the intro audio (1.2)
+          introAudio.onended = null;
+          introAudio.src = introFile2;
+          introAudio.play();
         };
+        introAudio.onended = finishIntro;
       });
     });
+    // Set volume slider to default 50%
+    volumeSlider.value = 50;
+    updateVolumeSliderBG();
   </script>
 </body>
 </html>
