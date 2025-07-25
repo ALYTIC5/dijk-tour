@@ -71,7 +71,7 @@
     #startOptions.fadeOut, #welcomeOverlay.fadeOut {
       opacity: 0;
     }
-    /* Added Skip Intro button styling */
+
     #skipIntro {
       position: absolute;
       bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
@@ -99,7 +99,7 @@
       background: #EE7440;
       color: #fff;
     }
-    /* Added Mute Soundscape toggle button styling */
+
     #muteToggle {
       width: 80vw; max-width: 12rem;
       padding: 1em;
@@ -186,7 +186,6 @@
       #welcomeOverlay { padding: 0 1rem; }
       #welcomeOverlay h1 { font-size: 1.25rem; }
       #welcomeOverlay p { font-size: 0.9rem; }
-      /* Responsive adjustments for Skip and Mute buttons */
       #skipIntro { bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem); width: 90vw; font-size: 0.9rem; }
       #muteToggle { width: 90vw; font-size: 0.9rem; }
     }
@@ -198,8 +197,8 @@
   <div id="welcomeOverlay"></div>
   <div id="startOptions">
     <button data-agent="agent_01jykbe73efcma2nva2xmhzqfh" data-lang="EN">Start Tour<br>English</button>
-    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="NL">Rondleiding starten<br>Dutch</button>
-    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="FR">Rondleiding starten<br>Frisian</button>
+    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="NL">Rondleiding Starten<br>Dutch</button>
+    <button data-agent="agent_01jxj6kx8cezesfxrsdxcjxx30" data-lang="FR">Rondleiding Starten<br>Frisian</button>
   </div>
   <button id="skipIntro" class="hidden">Skip Intro</button>
   <div id="mainContent">
@@ -360,7 +359,6 @@
           muteToggle.dataset.lang = lang;
           muteToggle.textContent = muteTexts[lang];
           muteToggle.classList.remove('hidden');
-          // Play the second part of the intro audio (1.2)
           introAudio.onended = null;
           introAudio.src = introFile2;
           introAudio.play();
@@ -368,7 +366,6 @@
         introAudio.onended = finishIntro;
       });
     });
-    // Set volume slider to default 50%
     volumeSlider.value = 50;
     updateVolumeSliderBG();
   </script>
