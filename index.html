@@ -67,11 +67,13 @@
       background: #EE7440;
       color: #fff;
     }
-    #startOptions.hidden { display: none; }
+    #startOptions.hidden,
+    #welcomeOverlay.hidden {
+      display: none;
+    }
     #startOptions.fadeOut, #welcomeOverlay.fadeOut {
       opacity: 0;
     }
-
     #skipIntro {
       position: absolute;
       bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
@@ -90,35 +92,14 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       z-index: 21;
     }
-    #skipIntro.hidden { display: none; }
+    #skipIntro.hidden {
+      display: none;
+    }
     #skipIntro:hover {
       background: rgba(238,116,64,0.8);
       transform: scale(1.05);
     }
     #skipIntro:active {
-      background: #EE7440;
-      color: #fff;
-    }
-
-    #muteToggle {
-      width: 80vw; max-width: 12rem;
-      padding: 1em;
-      background: rgba(255,255,255,0.6);
-      color: #1D1D1B;
-      border: 2px solid #EE7440;
-      border-radius: 32px;
-      font: 700 1rem/1.2 'Circular Std', sans-serif;
-      text-align: center;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    }
-    #muteToggle.hidden { display: none; }
-    #muteToggle:hover {
-      background: rgba(238,116,64,0.8);
-      transform: scale(1.05);
-    }
-    #muteToggle:active {
       background: #EE7440;
       color: #fff;
     }
@@ -129,67 +110,6 @@
     #widgetContainer {
       width: 90vw; max-width: 600px;
     }
-    #volumeControl {
-      width: 90vw; max-width: 600px;
-      padding: 0.5em 1em;
-      background: rgba(255,255,255,0.6);
-      border: 2px solid #EE7440;
-      border-radius: 32px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-    #volumeControl.hidden { display: none; }
-    #volumeControl.show { opacity: 1; }
-    #volumeSlider {
-      width: 100%;
-      -webkit-appearance: none; appearance: none;
-      height: 6px;
-      background: rgba(255,255,255,0.5);
-      outline: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    #volumeSlider::-webkit-slider-runnable-track {
-      width: 100%; height: 6px;
-      background: rgba(255,255,255,0.5);
-      border-radius: 3px;
-    }
-    #volumeSlider::-moz-range-track {
-      width: 100%; height: 6px;
-      background: rgba(255,255,255,0.5);
-      border-radius: 3px;
-    }
-    #volumeSlider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px; height: 20px;
-      background: #EE7440;
-      border: 2px solid #FFF;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      cursor: pointer;
-      margin-top: -7px;
-    }
-    #volumeSlider::-moz-range-thumb {
-      width: 20px; height: 20px;
-      background: #EE7440;
-      border: 2px solid #FFF;
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      cursor: pointer;
-    }
-    @media (max-width: 600px) {
-      #startOptions { bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem); }
-      #startOptions button { width: 90vw; font-size: 0.9rem; }
-      #widgetContainer { width: 95vw; }
-      #volumeControl { width: 95vw; padding: 0.5em 0.8em; }
-      #welcomeOverlay { padding: 0 1rem; }
-      #welcomeOverlay h1 { font-size: 1.25rem; }
-      #welcomeOverlay p { font-size: 0.9rem; }
-      #skipIntro { bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem); width: 90vw; font-size: 0.9rem; }
-      #muteToggle { width: 90vw; font-size: 0.9rem; }
-    }
-    #welcomeOverlay.hidden { display: none; }
   </style>
 </head>
 <body>
@@ -203,10 +123,6 @@
   <button id="skipIntro" class="hidden">Skip Intro</button>
   <div id="mainContent">
     <div id="widgetContainer"></div>
-    <div id="volumeControl" class="hidden">
-      <input type="range" id="volumeSlider" min="0" max="100" value="50" />
-    </div>
-    <button id="muteToggle" class="hidden">Mute Soundscape</button>
   </div>
   <audio id="bgAudio" loop preload="auto"></audio>
   <audio id="introAudio" preload="auto"></audio>
@@ -227,16 +143,6 @@
       NL: 'Intro overslaan',
       FR: "Passer l'intro"
     };
-    const muteTexts = {
-      EN: 'Mute Soundscape',
-      NL: 'Achtergrondgeluid dempen',
-      FR: 'Couper le son'
-    };
-    const unmuteTexts = {
-      EN: 'Unmute Soundscape',
-      NL: 'Achtergrondgeluid aanzetten',
-      FR: 'Rétablir le son'
-    };
     const tracks = [
       'Soundscapes - Lente - Dijk van een Wijf V2.mp3',
       'Soundscapes - Zommer - Dijk van een Wijf V2.mp3',
@@ -247,18 +153,18 @@
     const bgAudio = document.getElementById('bgAudio');
     const introAudio = document.getElementById('introAudio');
     let audioCtx, gainNode;
+
     function playTrack(idx) {
       bgAudio.src = tracks[idx];
       bgAudio.load();
       bgAudio.play();
     }
+
     const startOptions = document.getElementById('startOptions');
     const widgetContainer = document.getElementById('widgetContainer');
-    const volumeControl = document.getElementById('volumeControl');
-    const volumeSlider = document.getElementById('volumeSlider');
     const welcomeOverlay = document.getElementById('welcomeOverlay');
     const skipIntro = document.getElementById('skipIntro');
-    const muteToggle = document.getElementById('muteToggle');
+
     function enhanceWidget(alpha = 0.6) {
       const iv = setInterval(() => {
         const iframe = document.querySelector('iframe');
@@ -278,29 +184,12 @@
         } catch (e) {}
       }, 200);
     }
-    function updateVolumeSliderBG() {
-      const val = volumeSlider.value;
-      volumeSlider.style.background =
-        `linear-gradient(to right, #EE7440 0%, #EE7440 ${val}%, rgba(255,255,255,0.5) ${val}%, rgba(255,255,255,0.5) 100%)`;
-    }
-    volumeSlider.addEventListener('input', () => {
-      if (gainNode) gainNode.gain.value = volumeSlider.value / 100;
-      updateVolumeSliderBG();
-    });
+
     skipIntro.addEventListener('click', () => {
       introAudio.pause();
       if (introAudio.onended) introAudio.onended();
     });
-    muteToggle.addEventListener('click', () => {
-      const lang = muteToggle.dataset.lang || 'EN';
-      if (bgAudio.paused) {
-        bgAudio.play();
-        muteToggle.textContent = muteTexts[lang];
-      } else {
-        bgAudio.pause();
-        muteToggle.textContent = unmuteTexts[lang];
-      }
-    });
+
     startOptions.querySelectorAll('button').forEach(button => {
       button.addEventListener('click', () => {
         const agentId = button.dataset.agent;
@@ -312,6 +201,7 @@
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
           gainNode = audioCtx.createGain();
+          gainNode.gain.value = 0.3; // Set volume to 30%
           const src1 = audioCtx.createMediaElementSource(bgAudio);
           const src2 = audioCtx.createMediaElementSource(introAudio);
           src1.connect(gainNode);
@@ -320,17 +210,16 @@
           if (audioCtx.state === 'suspended') audioCtx.resume();
         }
         if (bgAudio.paused) {
-          // Select the appropriate seasonal soundscape track based on current month
           const month = new Date().getMonth();
           let seasonIndex;
           if (month >= 2 && month <= 4) {
-            seasonIndex = 0; // Spring (Lente)
+            seasonIndex = 0;
           } else if (month >= 5 && month <= 7) {
-            seasonIndex = 1; // Summer (Zommer)
+            seasonIndex = 1;
           } else if (month >= 8 && month <= 10) {
-            seasonIndex = 2; // Fall (Herfst)
+            seasonIndex = 2;
           } else {
-            seasonIndex = 3; // Winter (Winter)
+            seasonIndex = 3;
           }
           currentTrack = seasonIndex;
           playTrack(currentTrack);
@@ -350,15 +239,8 @@
           startOptions.classList.add('hidden');
           welcomeOverlay.classList.add('hidden');
           widgetContainer.innerHTML = `<elevenlabs-convai agent-id="${agentId}"></elevenlabs-convai>`;
-          volumeControl.classList.remove('hidden');
-          requestAnimationFrame(() => volumeControl.classList.add('show'));
-          updateVolumeSliderBG();
-          if (gainNode) gainNode.gain.value = volumeSlider.value / 100;
           enhanceWidget();
           skipIntro.classList.add('hidden');
-          muteToggle.dataset.lang = lang;
-          muteToggle.textContent = muteTexts[lang];
-          muteToggle.classList.remove('hidden');
           introAudio.onended = null;
           introAudio.src = introFile2;
           introAudio.play();
@@ -366,8 +248,6 @@
         introAudio.onended = finishIntro;
       });
     });
-    volumeSlider.value = 50;
-    updateVolumeSliderBG();
   </script>
 </body>
 </html>
